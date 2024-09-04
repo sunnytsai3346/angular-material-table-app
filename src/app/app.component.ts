@@ -1,5 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterOutlet } from '@angular/router';
 
 export interface UserData {
@@ -19,16 +25,44 @@ const ELEMENT_DATA: UserData[] = [
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [MatFormFieldModule,MatInputModule,MatTableModule,MatSort,MatPaginator, MatSelectModule,RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 
 export class AppComponent implements OnInit{
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
-  }
+  
   displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
   dataSource = new MatTableDataSource(ELEMENT_DATA);
-  
+  selectedSortColumn: string = 'name';
+
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  ngOnInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.customizeSort(this.selectedSortColumn);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  customizeSort(sortColumn: string) {
+    this.dataSource.sortingDataAccessor = (item:any, property) => {
+      switch (sortColumn) {
+        case 'name': return item.name.toLowerCase();
+        case 'progress': return item.progress;
+        case 'color': return item.color.toLowerCase();
+        default: return item[property];
+      }
+    };
+    this.dataSource.sort = this.sort; // Refresh sorting
+  }
 }

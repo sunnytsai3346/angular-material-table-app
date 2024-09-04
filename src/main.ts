@@ -5,7 +5,7 @@ import { provideRouter, Routes } from '@angular/router';
 import { HomeComponent } from './app/home/home.component'; // Example components
 const routes: Routes = [
   { path: '', component: AppComponent },
-  { path: '/home', component: HomeComponent },
+  
   // other routes
 ];
 //Bootstrap: You use bootstrapApplication instead of having a root NgModule to bootstrap the app.
